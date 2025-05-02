@@ -58,96 +58,6 @@ document.addEventListener('DOMContentLoaded', function() {
             .append('path')
             .attr('d', 'M0,-5L10,0L0,5')
             .attr('fill', '#333');
-            
-        // Condition marker (asterisk symbol)
-        defs.append('marker')
-            .attr('id', 'condition-symbol')
-            .attr('viewBox', '0 0 15 15')
-            .attr('refX', 7.5)
-            .attr('refY', 7.5)
-            .attr('markerWidth', 7)
-            .attr('markerHeight', 7)
-            .attr('orient', 'auto')
-            .attr('class', 'marker condition')
-            .append('text')
-            .attr('x', 7.5)
-            .attr('y', 11)
-            .attr('text-anchor', 'middle')
-            .attr('font-size', '12px')
-            .attr('font-weight', 'bold')
-            .text('*');
-        
-        // Response marker (asterisk symbol)
-        defs.append('marker')
-            .attr('id', 'response-symbol')
-            .attr('viewBox', '0 0 15 15')
-            .attr('refX', 7.5)
-            .attr('refY', 7.5)
-            .attr('markerWidth', 7)
-            .attr('markerHeight', 7)
-            .attr('orient', 'auto')
-            .attr('class', 'marker response')
-            .append('text')
-            .attr('x', 7.5)
-            .attr('y', 11)
-            .attr('text-anchor', 'middle')
-            .attr('font-size', '12px')
-            .attr('font-weight', 'bold')
-            .text('*');
-        
-        // Include marker (plus symbol)
-        defs.append('marker')
-            .attr('id', 'include-symbol')
-            .attr('viewBox', '0 0 15 15')
-            .attr('refX', 7.5)
-            .attr('refY', 7.5)
-            .attr('markerWidth', 7)
-            .attr('markerHeight', 7)
-            .attr('orient', 'auto')
-            .attr('class', 'marker include')
-            .append('text')
-            .attr('x', 7.5)
-            .attr('y', 11)
-            .attr('text-anchor', 'middle')
-            .attr('font-size', '12px')
-            .attr('font-weight', 'bold')
-            .text('+');
-            
-        // Exclude marker (percent symbol)
-        defs.append('marker')
-            .attr('id', 'exclude-symbol')
-            .attr('viewBox', '0 0 15 15')
-            .attr('refX', 7.5)
-            .attr('refY', 7.5)
-            .attr('markerWidth', 7)
-            .attr('markerHeight', 7)
-            .attr('orient', 'auto')
-            .attr('class', 'marker exclude')
-            .append('text')
-            .attr('x', 7.5)
-            .attr('y', 11)
-            .attr('text-anchor', 'middle')
-            .attr('font-size', '12px')
-            .attr('font-weight', 'bold')
-            .text('%');
-            
-        // Milestone marker (diamond symbol)
-        defs.append('marker')
-            .attr('id', 'milestone-symbol')
-            .attr('viewBox', '0 0 15 15')
-            .attr('refX', 7.5)
-            .attr('refY', 7.5)
-            .attr('markerWidth', 7)
-            .attr('markerHeight', 7)
-            .attr('orient', 'auto')
-            .attr('class', 'marker milestone')
-            .append('text')
-            .attr('x', 7.5)
-            .attr('y', 11)
-            .attr('text-anchor', 'middle')
-            .attr('font-size', '12px')
-            .attr('font-weight', 'bold')
-            .text('◇');
         
         // Create group for zoom/pan transformations
         g = svg.append('g');
@@ -285,7 +195,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 .attr('d', path)
                 .attr('marker-end', 'url(#arrow)');
             
-            // Add relation symbol
             // Calculate position for symbol (at midpoint of the curve)
             const t = 0.5; // t parameter for quadratic Bezier (0.5 means midpoint)
             const symbolX = (1-t)*(1-t)*source.x + 2*(1-t)*t*cpx + t*t*target.x;
@@ -294,60 +203,48 @@ document.addEventListener('DOMContentLoaded', function() {
             // Calculate angle for the relation type symbol
             const angle = Math.atan2(target.y - source.y, target.x - source.x) * 180 / Math.PI;
             
-            // Add symbol based on relation type
-            let symbol;
+            // Add relation label based on type
+            let relationLabel;
             
-            if (type === 'condition') {
-                symbol = linkGroup.append('text')
-                    .attr('class', `relation-symbol condition`)
-                    .attr('x', symbolX)
-                    .attr('y', symbolY)
-                    .attr('text-anchor', 'middle')
-                    .attr('dominant-baseline', 'middle')
-                    .attr('font-weight', 'bold')
-                    .attr('transform', `translate(${symbolX}, ${symbolY}) rotate(${angle}) translate(0, -5)`)
-                    .text('*');
-            } else if (type === 'response') {
-                symbol = linkGroup.append('text')
-                    .attr('class', `relation-symbol response`)
-                    .attr('x', symbolX)
-                    .attr('y', symbolY)
-                    .attr('text-anchor', 'middle')
-                    .attr('dominant-baseline', 'middle')
-                    .attr('font-weight', 'bold')
-                    .attr('transform', `translate(${symbolX}, ${symbolY}) rotate(${angle}) translate(0, -5)`)
-                    .text('*');
-            } else if (type === 'include') {
-                symbol = linkGroup.append('text')
-                    .attr('class', `relation-symbol include`)
-                    .attr('x', symbolX)
-                    .attr('y', symbolY)
-                    .attr('text-anchor', 'middle')
-                    .attr('dominant-baseline', 'middle')
-                    .attr('font-weight', 'bold')
-                    .attr('transform', `translate(${symbolX}, ${symbolY}) rotate(${angle}) translate(0, -5)`)
-                    .text('+');
-            } else if (type === 'exclude') {
-                symbol = linkGroup.append('text')
-                    .attr('class', `relation-symbol exclude`)
-                    .attr('x', symbolX)
-                    .attr('y', symbolY)
-                    .attr('text-anchor', 'middle')
-                    .attr('dominant-baseline', 'middle')
-                    .attr('font-weight', 'bold')
-                    .attr('transform', `translate(${symbolX}, ${symbolY}) rotate(${angle}) translate(0, -5)`)
-                    .text('%');
-            } else if (type === 'milestone') {
-                symbol = linkGroup.append('text')
-                    .attr('class', `relation-symbol milestone`)
-                    .attr('x', symbolX)
-                    .attr('y', symbolY)
-                    .attr('text-anchor', 'middle')
-                    .attr('dominant-baseline', 'middle')
-                    .attr('font-weight', 'bold')
-                    .attr('transform', `translate(${symbolX}, ${symbolY}) rotate(${angle}) translate(0, -5)`)
-                    .text('◇');
+            switch(type) {
+                case 'condition':
+                    relationLabel = '→*';
+                    break;
+                case 'response':
+                    relationLabel = '*→';
+                    break;
+                case 'include':
+                    relationLabel = '→+';
+                    break;
+                case 'exclude':
+                    relationLabel = '→%';
+                    break;
+                case 'milestone':
+                    relationLabel = '→◇';
+                    break;
+                default:
+                    relationLabel = '';
             }
+            
+            // Add the relation label
+            const labelBg = linkGroup.append('rect')
+                .attr('x', symbolX - 15)
+                .attr('y', symbolY - 10)
+                .attr('width', 30)
+                .attr('height', 20)
+                .attr('fill', 'white')
+                .attr('stroke', 'none')
+                .attr('rx', 3)
+                .attr('ry', 3)
+                .attr('transform', `rotate(${angle}, ${symbolX}, ${symbolY})`);
+                
+            const label = linkGroup.append('text')
+                .attr('class', `relation-symbol ${type}`)
+                .attr('x', symbolX)
+                .attr('y', symbolY + 5)
+                .attr('text-anchor', 'middle')
+                .attr('transform', `rotate(${angle}, ${symbolX}, ${symbolY})`)
+                .text(relationLabel);
         });
         
         // Center view on the graph
@@ -398,7 +295,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 .attr('d', path)
                 .attr('marker-end', 'url(#arrow)');
             
-            // Add relation symbol
             // Calculate position for symbol (at midpoint of the curve)
             const t = 0.5; // t parameter for quadratic Bezier (0.5 means midpoint)
             const symbolX = (1-t)*(1-t)*source.x + 2*(1-t)*t*cpx + t*t*target.x;
@@ -407,60 +303,48 @@ document.addEventListener('DOMContentLoaded', function() {
             // Calculate angle for the relation type symbol
             const angle = Math.atan2(target.y - source.y, target.x - source.x) * 180 / Math.PI;
             
-            // Add symbol based on relation type
-            let symbol;
+            // Add relation label based on type
+            let relationLabel;
             
-            if (type === 'condition') {
-                symbol = linkGroup.append('text')
-                    .attr('class', `relation-symbol condition`)
-                    .attr('x', symbolX)
-                    .attr('y', symbolY)
-                    .attr('text-anchor', 'middle')
-                    .attr('dominant-baseline', 'middle')
-                    .attr('font-weight', 'bold')
-                    .attr('transform', `translate(${symbolX}, ${symbolY}) rotate(${angle}) translate(0, -5)`)
-                    .text('*');
-            } else if (type === 'response') {
-                symbol = linkGroup.append('text')
-                    .attr('class', `relation-symbol response`)
-                    .attr('x', symbolX)
-                    .attr('y', symbolY)
-                    .attr('text-anchor', 'middle')
-                    .attr('dominant-baseline', 'middle')
-                    .attr('font-weight', 'bold')
-                    .attr('transform', `translate(${symbolX}, ${symbolY}) rotate(${angle}) translate(0, -5)`)
-                    .text('*');
-            } else if (type === 'include') {
-                symbol = linkGroup.append('text')
-                    .attr('class', `relation-symbol include`)
-                    .attr('x', symbolX)
-                    .attr('y', symbolY)
-                    .attr('text-anchor', 'middle')
-                    .attr('dominant-baseline', 'middle')
-                    .attr('font-weight', 'bold')
-                    .attr('transform', `translate(${symbolX}, ${symbolY}) rotate(${angle}) translate(0, -5)`)
-                    .text('+');
-            } else if (type === 'exclude') {
-                symbol = linkGroup.append('text')
-                    .attr('class', `relation-symbol exclude`)
-                    .attr('x', symbolX)
-                    .attr('y', symbolY)
-                    .attr('text-anchor', 'middle')
-                    .attr('dominant-baseline', 'middle')
-                    .attr('font-weight', 'bold')
-                    .attr('transform', `translate(${symbolX}, ${symbolY}) rotate(${angle}) translate(0, -5)`)
-                    .text('%');
-            } else if (type === 'milestone') {
-                symbol = linkGroup.append('text')
-                    .attr('class', `relation-symbol milestone`)
-                    .attr('x', symbolX)
-                    .attr('y', symbolY)
-                    .attr('text-anchor', 'middle')
-                    .attr('dominant-baseline', 'middle')
-                    .attr('font-weight', 'bold')
-                    .attr('transform', `translate(${symbolX}, ${symbolY}) rotate(${angle}) translate(0, -5)`)
-                    .text('◇');
+            switch(type) {
+                case 'condition':
+                    relationLabel = '→*';
+                    break;
+                case 'response':
+                    relationLabel = '*→';
+                    break;
+                case 'include':
+                    relationLabel = '→+';
+                    break;
+                case 'exclude':
+                    relationLabel = '→%';
+                    break;
+                case 'milestone':
+                    relationLabel = '→◇';
+                    break;
+                default:
+                    relationLabel = '';
             }
+            
+            // Add the relation label
+            const labelBg = linkGroup.append('rect')
+                .attr('x', symbolX - 15)
+                .attr('y', symbolY - 10)
+                .attr('width', 30)
+                .attr('height', 20)
+                .attr('fill', 'white')
+                .attr('stroke', 'none')
+                .attr('rx', 3)
+                .attr('ry', 3)
+                .attr('transform', `rotate(${angle}, ${symbolX}, ${symbolY})`);
+                
+            const label = linkGroup.append('text')
+                .attr('class', `relation-symbol ${type}`)
+                .attr('x', symbolX)
+                .attr('y', symbolY + 5)
+                .attr('text-anchor', 'middle')
+                .attr('transform', `rotate(${angle}, ${symbolX}, ${symbolY})`)
+                .text(relationLabel);
         });
     }
     
