@@ -135,6 +135,7 @@ button:hover {
     padding: 15px;
     border-radius: 8px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
 }
 
 .legend h3 {
@@ -155,7 +156,7 @@ button:hover {
     margin-right: 10px;
 }
 
-/* Updated DCR relation colors to match dcrgraphs.net */
+/* DCR relation colors to match dcrgraphs.net */
 .condition {
     background-color: #0072bc;  /* Blue for Condition relation */
 }
@@ -176,6 +177,46 @@ button:hover {
     background-color: #ff8000;  /* Orange for Milestone relation */
 }
 
+/* Activity state indicators */
+.legend-states {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.state-item {
+    display: flex;
+    align-items: center;
+}
+
+.state-icon {
+    width: 20px;
+    height: 20px;
+    margin-right: 10px;
+    border: 1.5px solid #333;
+    border-radius: 3px;
+}
+
+.state-icon.included {
+    background-color: #fff;
+}
+
+.state-icon.not-included {
+    background-color: #f5f5f5;
+    border-style: dashed;
+    opacity: 0.7;
+}
+
+.state-icon.pending {
+    background-color: #fff;
+    border-color: #d81e05;
+    border-width: 2px;
+}
+
+.state-icon.executed {
+    background-color: #e9ecef;
+}
+
 /* D3.js styling */
 .node {
     cursor: move;
@@ -185,6 +226,8 @@ button:hover {
     fill: #fff;
     stroke: #333;
     stroke-width: 1.5px;
+    rx: 5px;
+    ry: 5px;
 }
 
 .node.included rect {
@@ -209,6 +252,7 @@ button:hover {
 
 .node text {
     font-size: 12px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     text-anchor: middle;
     pointer-events: none;
 }
@@ -273,5 +317,10 @@ button:hover {
     
     #graph {
         height: 400px;
+    }
+    
+    .legend-states {
+        flex-direction: column;
+        gap: 8px;
     }
 }
