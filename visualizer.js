@@ -17,6 +17,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const width = graphContainer.clientWidth;
     const height = graphContainer.clientHeight;
     let svg, g, zoom;
+    let currentData; // Store the graph data globally for access in drag functions
     
     // Initialize graph
     initGraph();
@@ -43,76 +44,110 @@ document.addEventListener('DOMContentLoaded', function() {
             .attr('viewBox', [0, 0, width, height]);
         
         // Define arrow markers for different relation types
-        svg.append('defs')
-            .selectAll('marker')
-            .data(['condition', 'response', 'include', 'exclude'])
-            .enter()
-            .append('marker')
-            .attr('id', d => `arrow-${d}`)
+        const defs = svg.append('defs');
+        
+        // Arrow marker (used for all relations)
+        defs.append('marker')
+            .attr('id', 'arrow')
             .attr('viewBox', '0 -5 10 10')
-            .attr('refX', 20)
+            .attr('refX', 15)
             .attr('refY', 0)
             .attr('markerWidth', 6)
             .attr('markerHeight', 6)
             .attr('orient', 'auto')
-            .attr('class', d => `marker ${d}`)
             .append('path')
-            .attr('d', 'M0,-5L10,0L0,5');
-        
-        // Add specific markers for relation types
-        const defs = svg.select('defs');
-        
-        // Condition marker (filled circle)
-        defs.append('marker')
-            .attr('id', 'condition-circle')
-            .attr('viewBox', '0 0 10 10')
-            .attr('refX', 5)
-            .attr('refY', 5)
-            .attr('markerWidth', 6)
-            .attr('markerHeight', 6)
-            .attr('class', 'marker condition')
-            .append('circle')
-            .attr('cx', 5)
-            .attr('cy', 5)
-            .attr('r', 3);
-        
-        // Response marker (filled circle)
-        defs.append('marker')
-            .attr('id', 'response-circle')
-            .attr('viewBox', '0 0 10 10')
-            .attr('refX', 5)
-            .attr('refY', 5)
-            .attr('markerWidth', 6)
-            .attr('markerHeight', 6)
-            .attr('class', 'marker response')
-            .append('circle')
-            .attr('cx', 5)
-            .attr('cy', 5)
-            .attr('r', 3);
+            .attr('d', 'M0,-5L10,0L0,5')
+            .attr('fill', '#333');
             
-        // Include marker (+ symbol)
+        // Condition marker (asterisk symbol)
+        defs.append('marker')
+            .attr('id', 'condition-symbol')
+            .attr('viewBox', '0 0 15 15')
+            .attr('refX', 7.5)
+            .attr('refY', 7.5)
+            .attr('markerWidth', 7)
+            .attr('markerHeight', 7)
+            .attr('orient', 'auto')
+            .attr('class', 'marker condition')
+            .append('text')
+            .attr('x', 7.5)
+            .attr('y', 11)
+            .attr('text-anchor', 'middle')
+            .attr('font-size', '12px')
+            .attr('font-weight', 'bold')
+            .text('*');
+        
+        // Response marker (asterisk symbol)
+        defs.append('marker')
+            .attr('id', 'response-symbol')
+            .attr('viewBox', '0 0 15 15')
+            .attr('refX', 7.5)
+            .attr('refY', 7.5)
+            .attr('markerWidth', 7)
+            .attr('markerHeight', 7)
+            .attr('orient', 'auto')
+            .attr('class', 'marker response')
+            .append('text')
+            .attr('x', 7.5)
+            .attr('y', 11)
+            .attr('text-anchor', 'middle')
+            .attr('font-size', '12px')
+            .attr('font-weight', 'bold')
+            .text('*');
+        
+        // Include marker (plus symbol)
         defs.append('marker')
             .attr('id', 'include-symbol')
-            .attr('viewBox', '0 0 10 10')
-            .attr('refX', 5)
-            .attr('refY', 5)
-            .attr('markerWidth', 8)
-            .attr('markerHeight', 8)
+            .attr('viewBox', '0 0 15 15')
+            .attr('refX', 7.5)
+            .attr('refY', 7.5)
+            .attr('markerWidth', 7)
+            .attr('markerHeight', 7)
+            .attr('orient', 'auto')
             .attr('class', 'marker include')
-            .append('path')
-            .attr('d', 'M3,5 H7 M5,3 V7');
+            .append('text')
+            .attr('x', 7.5)
+            .attr('y', 11)
+            .attr('text-anchor', 'middle')
+            .attr('font-size', '12px')
+            .attr('font-weight', 'bold')
+            .text('+');
             
-        // Exclude marker (% symbol)
+        // Exclude marker (percent symbol)
         defs.append('marker')
             .attr('id', 'exclude-symbol')
-            .attr('viewBox', '0 0 10 10')
-            .attr('refX', 5)
-            .attr('refY', 5)
-            .attr('markerWidth', 8)
-            .attr('markerHeight', 8)
+            .attr('viewBox', '0 0 15 15')
+            .attr('refX', 7.5)
+            .attr('refY', 7.5)
+            .attr('markerWidth', 7)
+            .attr('markerHeight', 7)
+            .attr('orient', 'auto')
             .attr('class', 'marker exclude')
-            .append('path')
-            .attr('d', 'M2,2 L8,8 M8,2 L2,8');
+            .append('text')
+            .attr('x', 7.5)
+            .attr('y', 11)
+            .attr('text-anchor', 'middle')
+            .attr('font-size', '12px')
+            .attr('font-weight', 'bold')
+            .text('%');
+            
+        // Milestone marker (diamond symbol)
+        defs.append('marker')
+            .attr('id', 'milestone-symbol')
+            .attr('viewBox', '0 0 15 15')
+            .attr('refX', 7.5)
+            .attr('refY', 7.5)
+            .attr('markerWidth', 7)
+            .attr('markerHeight', 7)
+            .attr('orient', 'auto')
+            .attr('class', 'marker milestone')
+            .append('text')
+            .attr('x', 7.5)
+            .attr('y', 11)
+            .attr('text-anchor', 'middle')
+            .attr('font-size', '12px')
+            .attr('font-weight', 'bold')
+            .text('◇');
         
         // Create group for zoom/pan transformations
         g = svg.append('g');
@@ -165,6 +200,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Render DCR graph
     function renderGraph(data) {
+        // Store data for access in drag functions
+        currentData = data;
+        
         // Clear existing graph
         g.selectAll('*').remove();
         
@@ -178,25 +216,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 event.y = height / 2 + radius * Math.sin(angle);
             }
         });
-        
-        // Create links (relations)
-        const links = g.selectAll('.link')
-            .data(data.relations)
-            .enter()
-            .append('path')
-            .attr('class', d => `link ${d.type}`)
-            .attr('marker-end', d => {
-                if (d.type === 'condition') return 'url(#arrow-condition)';
-                if (d.type === 'response') return 'url(#arrow-response)';
-                if (d.type === 'include') return 'url(#arrow-include)';
-                if (d.type === 'exclude') return 'url(#arrow-exclude)';
-            })
-            .attr('marker-mid', d => {
-                if (d.type === 'condition') return 'url(#condition-circle)';
-                if (d.type === 'response') return 'url(#response-circle)';
-                if (d.type === 'include') return 'url(#include-symbol)';
-                if (d.type === 'exclude') return 'url(#exclude-symbol)';
-            });
         
         // Create nodes (events)
         const nodes = g.selectAll('.node')
@@ -237,37 +256,212 @@ document.addEventListener('DOMContentLoaded', function() {
             nodeById[node.id] = node;
         });
         
-        // Update link paths
-        updateLinkPaths();
+        // Create links (relations)
+        const linkGroup = g.append('g').attr('class', 'links');
         
-        // Setup simulation for force layout if needed
-        /* Uncomment to enable force layout
-        const simulation = d3.forceSimulation(data.events)
-            .force('charge', d3.forceManyBody().strength(-500))
-            .force('center', d3.forceCenter(width / 2, height / 2))
-            .force('collision', d3.forceCollide().radius(80))
-            .on('tick', () => {
-                nodes.attr('transform', d => `translate(${d.x}, ${d.y})`);
-                updateLinkPaths();
-            });
-        */
-        
-        // Function to update the paths between nodes
-        function updateLinkPaths() {
-            links.attr('d', d => {
-                const source = nodeById[d.source];
-                const target = nodeById[d.target];
-                
-                if (!source || !target) return '';
-                
-                // Calculate path with a curve
-                return `M${source.x},${source.y} Q${(source.x + target.x) / 2 + 30},${(source.y + target.y) / 2} ${target.x},${target.y}`;
-            });
-        }
+        data.relations.forEach(relation => {
+            const source = nodeById[relation.source];
+            const target = nodeById[relation.target];
+            
+            if (!source || !target) return;
+            
+            const type = relation.type;
+            
+            // Calculate the path
+            const dx = target.x - source.x;
+            const dy = target.y - source.y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            
+            // Calculate control point for curve (perpendicular to the line)
+            const cpx = (source.x + target.x) / 2 + dy * 0.2;
+            const cpy = (source.y + target.y) / 2 - dx * 0.2;
+            
+            // Create curved path
+            const path = `M${source.x},${source.y} Q${cpx},${cpy} ${target.x},${target.y}`;
+            
+            // Add link path
+            const link = linkGroup.append('path')
+                .attr('class', `link ${type}`)
+                .attr('d', path)
+                .attr('marker-end', 'url(#arrow)');
+            
+            // Add relation symbol
+            // Calculate position for symbol (at midpoint of the curve)
+            const t = 0.5; // t parameter for quadratic Bezier (0.5 means midpoint)
+            const symbolX = (1-t)*(1-t)*source.x + 2*(1-t)*t*cpx + t*t*target.x;
+            const symbolY = (1-t)*(1-t)*source.y + 2*(1-t)*t*cpy + t*t*target.y;
+            
+            // Calculate angle for the relation type symbol
+            const angle = Math.atan2(target.y - source.y, target.x - source.x) * 180 / Math.PI;
+            
+            // Add symbol based on relation type
+            let symbol;
+            
+            if (type === 'condition') {
+                symbol = linkGroup.append('text')
+                    .attr('class', `relation-symbol condition`)
+                    .attr('x', symbolX)
+                    .attr('y', symbolY)
+                    .attr('text-anchor', 'middle')
+                    .attr('dominant-baseline', 'middle')
+                    .attr('font-weight', 'bold')
+                    .attr('transform', `translate(${symbolX}, ${symbolY}) rotate(${angle}) translate(0, -5)`)
+                    .text('*');
+            } else if (type === 'response') {
+                symbol = linkGroup.append('text')
+                    .attr('class', `relation-symbol response`)
+                    .attr('x', symbolX)
+                    .attr('y', symbolY)
+                    .attr('text-anchor', 'middle')
+                    .attr('dominant-baseline', 'middle')
+                    .attr('font-weight', 'bold')
+                    .attr('transform', `translate(${symbolX}, ${symbolY}) rotate(${angle}) translate(0, -5)`)
+                    .text('*');
+            } else if (type === 'include') {
+                symbol = linkGroup.append('text')
+                    .attr('class', `relation-symbol include`)
+                    .attr('x', symbolX)
+                    .attr('y', symbolY)
+                    .attr('text-anchor', 'middle')
+                    .attr('dominant-baseline', 'middle')
+                    .attr('font-weight', 'bold')
+                    .attr('transform', `translate(${symbolX}, ${symbolY}) rotate(${angle}) translate(0, -5)`)
+                    .text('+');
+            } else if (type === 'exclude') {
+                symbol = linkGroup.append('text')
+                    .attr('class', `relation-symbol exclude`)
+                    .attr('x', symbolX)
+                    .attr('y', symbolY)
+                    .attr('text-anchor', 'middle')
+                    .attr('dominant-baseline', 'middle')
+                    .attr('font-weight', 'bold')
+                    .attr('transform', `translate(${symbolX}, ${symbolY}) rotate(${angle}) translate(0, -5)`)
+                    .text('%');
+            } else if (type === 'milestone') {
+                symbol = linkGroup.append('text')
+                    .attr('class', `relation-symbol milestone`)
+                    .attr('x', symbolX)
+                    .attr('y', symbolY)
+                    .attr('text-anchor', 'middle')
+                    .attr('dominant-baseline', 'middle')
+                    .attr('font-weight', 'bold')
+                    .attr('transform', `translate(${symbolX}, ${symbolY}) rotate(${angle}) translate(0, -5)`)
+                    .text('◇');
+            }
+        });
         
         // Center view on the graph
         const bounds = getBoundingBox(data.events);
         centerView(bounds);
+    }
+    
+    // Function to update link paths when nodes are dragged
+    function updateLinkPaths() {
+        // Only proceed if we have data
+        if (!currentData || !currentData.relations || !currentData.events) return;
+        
+        // Create a lookup object for nodes by id
+        const nodeById = {};
+        currentData.events.forEach(node => {
+            nodeById[node.id] = node;
+        });
+        
+        // Remove all existing links
+        g.selectAll('.links').remove();
+        
+        // Recreate all links
+        const linkGroup = g.append('g').attr('class', 'links');
+        
+        currentData.relations.forEach(relation => {
+            const source = nodeById[relation.source];
+            const target = nodeById[relation.target];
+            
+            if (!source || !target) return;
+            
+            const type = relation.type;
+            
+            // Calculate the path
+            const dx = target.x - source.x;
+            const dy = target.y - source.y;
+            const distance = Math.sqrt(dx * dx + dy * dy);
+            
+            // Calculate control point for curve (perpendicular to the line)
+            const cpx = (source.x + target.x) / 2 + dy * 0.2;
+            const cpy = (source.y + target.y) / 2 - dx * 0.2;
+            
+            // Create curved path
+            const path = `M${source.x},${source.y} Q${cpx},${cpy} ${target.x},${target.y}`;
+            
+            // Add link path
+            const link = linkGroup.append('path')
+                .attr('class', `link ${type}`)
+                .attr('d', path)
+                .attr('marker-end', 'url(#arrow)');
+            
+            // Add relation symbol
+            // Calculate position for symbol (at midpoint of the curve)
+            const t = 0.5; // t parameter for quadratic Bezier (0.5 means midpoint)
+            const symbolX = (1-t)*(1-t)*source.x + 2*(1-t)*t*cpx + t*t*target.x;
+            const symbolY = (1-t)*(1-t)*source.y + 2*(1-t)*t*cpy + t*t*target.y;
+            
+            // Calculate angle for the relation type symbol
+            const angle = Math.atan2(target.y - source.y, target.x - source.x) * 180 / Math.PI;
+            
+            // Add symbol based on relation type
+            let symbol;
+            
+            if (type === 'condition') {
+                symbol = linkGroup.append('text')
+                    .attr('class', `relation-symbol condition`)
+                    .attr('x', symbolX)
+                    .attr('y', symbolY)
+                    .attr('text-anchor', 'middle')
+                    .attr('dominant-baseline', 'middle')
+                    .attr('font-weight', 'bold')
+                    .attr('transform', `translate(${symbolX}, ${symbolY}) rotate(${angle}) translate(0, -5)`)
+                    .text('*');
+            } else if (type === 'response') {
+                symbol = linkGroup.append('text')
+                    .attr('class', `relation-symbol response`)
+                    .attr('x', symbolX)
+                    .attr('y', symbolY)
+                    .attr('text-anchor', 'middle')
+                    .attr('dominant-baseline', 'middle')
+                    .attr('font-weight', 'bold')
+                    .attr('transform', `translate(${symbolX}, ${symbolY}) rotate(${angle}) translate(0, -5)`)
+                    .text('*');
+            } else if (type === 'include') {
+                symbol = linkGroup.append('text')
+                    .attr('class', `relation-symbol include`)
+                    .attr('x', symbolX)
+                    .attr('y', symbolY)
+                    .attr('text-anchor', 'middle')
+                    .attr('dominant-baseline', 'middle')
+                    .attr('font-weight', 'bold')
+                    .attr('transform', `translate(${symbolX}, ${symbolY}) rotate(${angle}) translate(0, -5)`)
+                    .text('+');
+            } else if (type === 'exclude') {
+                symbol = linkGroup.append('text')
+                    .attr('class', `relation-symbol exclude`)
+                    .attr('x', symbolX)
+                    .attr('y', symbolY)
+                    .attr('text-anchor', 'middle')
+                    .attr('dominant-baseline', 'middle')
+                    .attr('font-weight', 'bold')
+                    .attr('transform', `translate(${symbolX}, ${symbolY}) rotate(${angle}) translate(0, -5)`)
+                    .text('%');
+            } else if (type === 'milestone') {
+                symbol = linkGroup.append('text')
+                    .attr('class', `relation-symbol milestone`)
+                    .attr('x', symbolX)
+                    .attr('y', symbolY)
+                    .attr('text-anchor', 'middle')
+                    .attr('dominant-baseline', 'middle')
+                    .attr('font-weight', 'bold')
+                    .attr('transform', `translate(${symbolX}, ${symbolY}) rotate(${angle}) translate(0, -5)`)
+                    .text('◇');
+            }
+        });
     }
     
     // Get bounding box of nodes
@@ -330,14 +524,7 @@ document.addEventListener('DOMContentLoaded', function() {
         d3.select(this).attr('transform', `translate(${d.x}, ${d.y})`);
         
         // Update link paths when nodes are dragged
-        g.selectAll('.link').attr('d', link => {
-            const source = data.events.find(n => n.id === link.source);
-            const target = data.events.find(n => n.id === link.target);
-            
-            if (!source || !target) return '';
-            
-            return `M${source.x},${source.y} Q${(source.x + target.x) / 2 + 30},${(source.y + target.y) / 2} ${target.x},${target.y}`;
-        });
+        updateLinkPaths();
     }
     
     function dragEnded(event, d) {
