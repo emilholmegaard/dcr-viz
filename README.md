@@ -9,18 +9,18 @@ DCR (Dynamic Condition Response) Graphs are a declarative process notation used 
 A DCR graph consists of:
 - **Events/Activities**: Nodes representing tasks or actions that can be executed
 - **Relations**: Five types of directed edges between events:
-  - **Condition (→*)**: One event must happen before another can execute
-  - **Response (*→)**: If one event happens, another must eventually follow
-  - **Include (→+)**: One event can enable another
-  - **Exclude (→%)**: One event can disable another
-  - **Milestone (→◇)**: One event must be in a specific state for another to execute
+  - **Condition**: One event must happen before another can execute (blue circle with asterisk)
+  - **Response**: If one event happens, another must eventually follow (red circle with asterisk)
+  - **Include**: One event can enable another (green circle with plus)
+  - **Exclude**: One event can disable another (purple circle with percent)
+  - **Milestone**: One event must be in a specific state for another to execute (orange diamond)
 
 ## Features
 
 - Load and visualize DCR graphs from JSON format
 - Interactive visualization with draggable nodes
 - Zoom and pan capabilities
-- Display different relation types with distinct colors and styles that match the DCR standard
+- Display different relation types with distinct symbols and colors that match the DCR standard
 - Role-based activity boxes that match the standard DCR visualization
 - Four example DCR graphs demonstrating different process scenarios:
   - Application Review Process
@@ -71,7 +71,7 @@ For a detailed description of the JSON format, see the [JSON Format Documentatio
 
 ## Visual Design
 
-The visualization follows the standard DCR notation:
+The visualization follows the standard DCR notation exactly as shown in dcrgraphs.net:
 
 1. **Activities**: Represented as rounded rectangles with:
    - Role label at the top
@@ -79,11 +79,11 @@ The visualization follows the standard DCR notation:
    - Different border styles for different states (included, not included, pending, executed)
 
 2. **Relations**: Represented as colored arrows with specific symbols:
-   - Condition (→*): Blue
-   - Response (*→): Red
-   - Include (→+): Green
-   - Exclude (→%): Purple
-   - Milestone (→◇): Orange
+   - Condition: Blue arrow with blue circle containing asterisk (*)
+   - Response: Red arrow with red circle containing asterisk (*)
+   - Include: Green arrow with green circle containing plus (+)
+   - Exclude: Purple arrow with purple circle containing percent (%)
+   - Milestone: Orange arrow with orange diamond shape (◇)
 
 ## Development
 
