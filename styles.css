@@ -158,23 +158,49 @@ button:hover {
 
 /* DCR relation colors to match dcrgraphs.net */
 .condition {
-    background-color: #0072bc;  /* Blue for Condition relation */
+    color: #0072bc;  /* Blue for Condition relation */
 }
 
 .response {
-    background-color: #d81e05;  /* Red for Response relation */
+    color: #d81e05;  /* Red for Response relation */
 }
 
 .include {
-    background-color: #4ca64c;  /* Green for Include relation */
+    color: #4ca64c;  /* Green for Include relation */
 }
 
 .exclude {
-    background-color: #8000a0;  /* Purple for Exclude relation */
+    color: #8000a0;  /* Purple for Exclude relation */
 }
 
 .milestone {
-    background-color: #ff8000;  /* Orange for Milestone relation */
+    color: #ff8000;  /* Orange for Milestone relation */
+}
+
+/* Link colors */
+.link.condition {
+    stroke: #0072bc;  /* Blue for Condition relation */
+    stroke-width: 2px;
+}
+
+.link.response {
+    stroke: #d81e05;  /* Red for Response relation */
+    stroke-width: 2px;
+}
+
+.link.include {
+    stroke: #4ca64c;  /* Green for Include relation */
+    stroke-width: 2px;
+}
+
+.link.exclude {
+    stroke: #8000a0;  /* Purple for Exclude relation */
+    stroke-width: 2px;
+}
+
+.link.milestone {
+    stroke: #ff8000;  /* Orange for Milestone relation */
+    stroke-width: 2px;
 }
 
 /* Activity state indicators */
@@ -222,21 +248,21 @@ button:hover {
     cursor: move;
 }
 
+/* Activity box styling */
 .node rect {
-    fill: #fff;
-    stroke: #333;
-    stroke-width: 1.5px;
-    rx: 5px;
-    ry: 5px;
+    fill: #fffaeb;  /* Light cream color to match Image 2 */
+    stroke: #bbb;  /* Light gray border */
+    stroke-width: 2px;
+    rx: 8px;
+    ry: 8px;
 }
 
 .node.included rect {
-    fill: #fff;
+    fill: #fffaeb;
 }
 
 .node.executed rect {
     fill: #e9ecef;
-    stroke: #555;
 }
 
 .node.pending rect {
@@ -250,60 +276,53 @@ button:hover {
     opacity: 0.7;
 }
 
-.node text {
-    font-size: 12px;
+/* Activity role styling */
+.node .role-label {
+    font-size: 11px;
+    font-weight: bold;
+    text-anchor: middle;
+    pointer-events: none;
+    fill: #000;
+}
+
+/* Activity name styling */
+.node .activity-label {
+    font-size: 14px;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     text-anchor: middle;
     pointer-events: none;
+    fill: #333;
 }
 
 .link {
     fill: none;
+    stroke-width: 2px;
+}
+
+/* Relation symbols */
+.relation-symbol {
+    font-size: 18px;
+    font-weight: bold;
+    pointer-events: none;
+    dominant-baseline: central;
+    text-anchor: middle;
+}
+
+/* Relation symbol markers */
+.marker-circle {
+    fill: none;
     stroke-width: 1.5px;
 }
 
-.link.condition {
-    stroke: #0072bc;  /* Blue for Condition relation */
+/* Relation arrows */
+.arrow-head {
+    fill: #333;
 }
 
-.link.response {
-    stroke: #d81e05;  /* Red for Response relation */
-}
-
-.link.include {
-    stroke: #4ca64c;  /* Green for Include relation */
-}
-
-.link.exclude {
-    stroke: #8000a0;  /* Purple for Exclude relation */
-}
-
-.link.milestone {
-    stroke: #ff8000;  /* Orange for Milestone relation */
-}
-
-.marker {
-    fill: #555;
-}
-
-.marker.condition {
-    fill: #0072bc;  /* Blue for Condition relation */
-}
-
-.marker.response {
-    fill: #d81e05;  /* Red for Response relation */
-}
-
-.marker.include {
-    fill: #4ca64c;  /* Green for Include relation */
-}
-
-.marker.exclude {
-    fill: #8000a0;  /* Purple for Exclude relation */
-}
-
-.marker.milestone {
-    fill: #ff8000;  /* Orange for Milestone relation */
+/* Label backgrounds */
+.relation-bg {
+    fill: white;
+    fill-opacity: 0;
 }
 
 @media (max-width: 768px) {
