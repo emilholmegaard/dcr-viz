@@ -21,17 +21,19 @@ A DCR graph consists of:
 - Interactive visualization with draggable nodes
 - Zoom and pan capabilities
 - Display different relation types with distinct colors and styles that match the DCR standard
-- Three example DCR graphs demonstrating different process scenarios
+- Role-based activity boxes that match the standard DCR visualization
+- Four example DCR graphs demonstrating different process scenarios:
+  - Application Review Process
+  - Order Processing Workflow
+  - Project Management Workflow
+  - Email Workflow (matching the standard DCR visualization)
 
 ## Usage
 
 1. Open `index.html` in a web browser
 2. Upload a DCR graph JSON file or paste JSON directly
 3. Visualize and interact with the graph
-4. Alternatively, try one of the included examples:
-   - Application Review Process
-   - Order Processing Workflow
-   - Project Management Workflow (with all relation types)
+4. Alternatively, try one of the included examples
 
 ## JSON Format
 
@@ -43,6 +45,7 @@ The visualization tool accepts DCR graphs in the following JSON format:
     {
       "id": "event1",
       "label": "Event 1",
+      "role": "Role A",
       "included": true,
       "pending": false,
       "executed": false,
@@ -65,6 +68,22 @@ The visualization tool accepts DCR graphs in the following JSON format:
 Relation types can be: `condition`, `response`, `include`, `exclude`, or `milestone`.
 
 For a detailed description of the JSON format, see the [JSON Format Documentation](docs/json-format.md).
+
+## Visual Design
+
+The visualization follows the standard DCR notation:
+
+1. **Activities**: Represented as rounded rectangles with:
+   - Role label at the top
+   - Activity name in the center
+   - Different border styles for different states (included, not included, pending, executed)
+
+2. **Relations**: Represented as colored arrows with specific symbols:
+   - Condition (→*): Blue
+   - Response (*→): Red
+   - Include (→+): Green
+   - Exclude (→%): Purple
+   - Milestone (→◇): Orange
 
 ## Development
 
