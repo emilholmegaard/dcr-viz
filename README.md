@@ -54,6 +54,22 @@ The visualization tool accepts DCR graphs in the following JSON format:
 }
 ```
 
+For a detailed description of the JSON format, see the [JSON Format Documentation](docs/json-format.md).
+
+## Development
+
+### Project Structure
+
+- `index.html` - Main HTML file with the user interface
+- `styles.css` - CSS styles for the visualization
+- `visualizer.js` - JavaScript code for the D3.js visualization
+- `examples.js` - Sample DCR graph examples
+- `docs/` - Documentation files
+
+### Built With
+
+- [D3.js](https://d3js.org/) - Data visualization library used for rendering the graphs
+
 ## License
 
 MIT
