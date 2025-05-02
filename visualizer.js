@@ -50,16 +50,16 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Arrow marker (used for all relations)
         defs.append('marker')
-            .attr('id', 'arrow')
+            .attr('id', 'arrowhead')
             .attr('viewBox', '0 -5 10 10')
-            .attr('refX', 15)
+            .attr('refX', 0)
             .attr('refY', 0)
+            .attr('orient', 'auto')
             .attr('markerWidth', 6)
             .attr('markerHeight', 6)
-            .attr('orient', 'auto')
             .append('path')
-            .attr('d', 'M0,-5L10,0L0,5')
-            .attr('fill', '#333');
+            .attr('d', 'M0,-4L8,0L0,4')
+            .attr('class', 'arrow-head');
         
         // Create group for zoom/pan transformations
         g = svg.append('g');
@@ -129,6 +129,9 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
         
+        // Create links (relations) first so they appear behind nodes
+        const linkGroup = g.append('g').attr('class', 'links');
+        
         // Create nodes (events)
         const nodes = g.selectAll('.node')
             .data(data.events)
@@ -150,15 +153,22 @@ document.addEventListener('DOMContentLoaded', function() {
         
         // Add rectangle for each node
         nodes.append('rect')
-            .attr('x', -60)
-            .attr('y', -20)
-            .attr('width', 120)
-            .attr('height', 40)
-            .attr('rx', 5)
-            .attr('ry', 5);
+            .attr('x', -70)
+            .attr('y', -30)
+            .attr('width', 140)
+            .attr('height', 60)
+            .attr('rx', 8)
+            .attr('ry', 8);
         
-        // Add text label for each node
+        // Add role label at top of node (default to event id if role not specified)
         nodes.append('text')
+            .attr('class', 'role-label')
+            .attr('dy', -13)
+            .text(d => d.role || (d.id.charAt(0).toUpperCase() + d.id.slice(1)));
+        
+        // Add activity label in middle of node
+        nodes.append('text')
+            .attr('class', 'activity-label')
             .attr('dy', 5)
             .text(d => d.label);
         
@@ -168,9 +178,7 @@ document.addEventListener('DOMContentLoaded', function() {
             nodeById[node.id] = node;
         });
         
-        // Create links (relations)
-        const linkGroup = g.append('g').attr('class', 'links');
-        
+        // Draw relations
         data.relations.forEach(relation => {
             const source = nodeById[relation.source];
             const target = nodeById[relation.target];
@@ -179,31 +187,56 @@ document.addEventListener('DOMContentLoaded', function() {
             
             const type = relation.type;
             
-            // Calculate the path
+            // Calculate path points
             const dx = target.x - source.x;
             const dy = target.y - source.y;
             const distance = Math.sqrt(dx * dx + dy * dy);
             
+            // Adjust start and end points to be at the edges of the node boxes
+            const nodeWidth = 140;
+            const nodeHeight = 60;
+            
+            // Calculate angle between nodes
+            const angle = Math.atan2(dy, dx);
+            
+            // Calculate edge points of source and target boxes
+            let sourceX, sourceY, targetX, targetY;
+            
+            // If angle is more to the left/right, intersect with left/right edge
+            if (Math.abs(Math.cos(angle)) > Math.abs(Math.sin(angle))) {
+                sourceX = source.x + (dx > 0 ? nodeWidth/2 : -nodeWidth/2);
+                sourceY = source.y + Math.tan(angle) * (dx > 0 ? nodeWidth/2 : -nodeWidth/2);
+                targetX = target.x + (dx < 0 ? nodeWidth/2 : -nodeWidth/2);
+                targetY = target.y + Math.tan(angle) * (dx < 0 ? nodeWidth/2 : -nodeWidth/2);
+            } 
+            // Otherwise intersect with top/bottom edge
+            else {
+                sourceY = source.y + (dy > 0 ? nodeHeight/2 : -nodeHeight/2);
+                sourceX = source.x + (1/Math.tan(angle)) * (dy > 0 ? nodeHeight/2 : -nodeHeight/2);
+                targetY = target.y + (dy < 0 ? nodeHeight/2 : -nodeHeight/2);
+                targetX = target.x + (1/Math.tan(angle)) * (dy < 0 ? nodeHeight/2 : -nodeHeight/2);
+            }
+            
             // Calculate control point for curve (perpendicular to the line)
-            const cpx = (source.x + target.x) / 2 + dy * 0.2;
-            const cpy = (source.y + target.y) / 2 - dx * 0.2;
+            const cpx = (sourceX + targetX) / 2 + dy * 0.1;
+            const cpy = (sourceY + targetY) / 2 - dx * 0.1;
             
             // Create curved path
-            const path = `M${source.x},${source.y} Q${cpx},${cpy} ${target.x},${target.y}`;
+            const path = `M${sourceX},${sourceY} Q${cpx},${cpy} ${targetX},${targetY}`;
             
             // Add link path
             const link = linkGroup.append('path')
                 .attr('class', `link ${type}`)
                 .attr('d', path)
-                .attr('marker-end', 'url(#arrow)');
+                .attr('marker-end', 'url(#arrowhead)');
             
             // Calculate position for symbol (at midpoint of the curve)
             const t = 0.5; // t parameter for quadratic Bezier (0.5 means midpoint)
-            const symbolX = (1-t)*(1-t)*source.x + 2*(1-t)*t*cpx + t*t*target.x;
-            const symbolY = (1-t)*(1-t)*source.y + 2*(1-t)*t*cpy + t*t*target.y;
+            const symbolX = (1-t)*(1-t)*sourceX + 2*(1-t)*t*cpx + t*t*targetX;
+            const symbolY = (1-t)*(1-t)*sourceY + 2*(1-t)*t*cpy + t*t*targetY;
             
             // Calculate angle for the relation type symbol
-            const angle = Math.atan2(target.y - source.y, target.x - source.x) * 180 / Math.PI;
+            const pathAngle = Math.atan2(targetY - sourceY, targetX - sourceX) * 180 / Math.PI;
             
             // Add relation label based on type
             let relationLabel;
@@ -228,25 +261,30 @@ document.addEventListener('DOMContentLoaded', function() {
                     relationLabel = '';
             }
             
-            // Add the relation label
-            const labelBg = linkGroup.append('rect')
-                .attr('x', symbolX - 15)
-                .attr('y', symbolY - 10)
+            // Add the relation label with background
+            const labelGroup = linkGroup.append('g')
+                .attr('transform', `translate(${symbolX}, ${symbolY})`);
+            
+            // Add visible white background for the label
+            labelGroup.append('rect')
+                .attr('x', -15)
+                .attr('y', -15)
                 .attr('width', 30)
-                .attr('height', 20)
-                .attr('fill', 'white')
-                .attr('stroke', 'none')
+                .attr('height', 25)
+                .attr('class', 'relation-bg')
                 .attr('rx', 3)
-                .attr('ry', 3)
-                .attr('transform', `rotate(${angle}, ${symbolX}, ${symbolY})`);
+                .attr('ry', 3);
                 
-            const label = linkGroup.append('text')
+            labelGroup.append('text')
                 .attr('class', `relation-symbol ${type}`)
-                .attr('x', symbolX)
-                .attr('y', symbolY + 5)
-                .attr('text-anchor', 'middle')
-                .attr('transform', `rotate(${angle}, ${symbolX}, ${symbolY})`)
+                .attr('x', 0)
+                .attr('y', 0)
                 .text(relationLabel);
+                
+            // For visual debugging
+            // labelGroup.append('circle')
+            //     .attr('r', 3)
+            //     .attr('fill', 'red');
         });
         
         // Center view on the graph
@@ -279,31 +317,56 @@ document.addEventListener('DOMContentLoaded', function() {
             
             const type = relation.type;
             
-            // Calculate the path
+            // Calculate path points
             const dx = target.x - source.x;
             const dy = target.y - source.y;
             const distance = Math.sqrt(dx * dx + dy * dy);
             
+            // Adjust start and end points to be at the edges of the node boxes
+            const nodeWidth = 140;
+            const nodeHeight = 60;
+            
+            // Calculate angle between nodes
+            const angle = Math.atan2(dy, dx);
+            
+            // Calculate edge points of source and target boxes
+            let sourceX, sourceY, targetX, targetY;
+            
+            // If angle is more to the left/right, intersect with left/right edge
+            if (Math.abs(Math.cos(angle)) > Math.abs(Math.sin(angle))) {
+                sourceX = source.x + (dx > 0 ? nodeWidth/2 : -nodeWidth/2);
+                sourceY = source.y + Math.tan(angle) * (dx > 0 ? nodeWidth/2 : -nodeWidth/2);
+                targetX = target.x + (dx < 0 ? nodeWidth/2 : -nodeWidth/2);
+                targetY = target.y + Math.tan(angle) * (dx < 0 ? nodeWidth/2 : -nodeWidth/2);
+            } 
+            // Otherwise intersect with top/bottom edge
+            else {
+                sourceY = source.y + (dy > 0 ? nodeHeight/2 : -nodeHeight/2);
+                sourceX = source.x + (1/Math.tan(angle)) * (dy > 0 ? nodeHeight/2 : -nodeHeight/2);
+                targetY = target.y + (dy < 0 ? nodeHeight/2 : -nodeHeight/2);
+                targetX = target.x + (1/Math.tan(angle)) * (dy < 0 ? nodeHeight/2 : -nodeHeight/2);
+            }
+            
             // Calculate control point for curve (perpendicular to the line)
-            const cpx = (source.x + target.x) / 2 + dy * 0.2;
-            const cpy = (source.y + target.y) / 2 - dx * 0.2;
+            const cpx = (sourceX + targetX) / 2 + dy * 0.1;
+            const cpy = (sourceY + targetY) / 2 - dx * 0.1;
             
             // Create curved path
-            const path = `M${source.x},${source.y} Q${cpx},${cpy} ${target.x},${target.y}`;
+            const path = `M${sourceX},${sourceY} Q${cpx},${cpy} ${targetX},${targetY}`;
             
             // Add link path
             const link = linkGroup.append('path')
                 .attr('class', `link ${type}`)
                 .attr('d', path)
-                .attr('marker-end', 'url(#arrow)');
+                .attr('marker-end', 'url(#arrowhead)');
             
             // Calculate position for symbol (at midpoint of the curve)
             const t = 0.5; // t parameter for quadratic Bezier (0.5 means midpoint)
-            const symbolX = (1-t)*(1-t)*source.x + 2*(1-t)*t*cpx + t*t*target.x;
-            const symbolY = (1-t)*(1-t)*source.y + 2*(1-t)*t*cpy + t*t*target.y;
+            const symbolX = (1-t)*(1-t)*sourceX + 2*(1-t)*t*cpx + t*t*targetX;
+            const symbolY = (1-t)*(1-t)*sourceY + 2*(1-t)*t*cpy + t*t*targetY;
             
             // Calculate angle for the relation type symbol
-            const angle = Math.atan2(target.y - source.y, target.x - source.x) * 180 / Math.PI;
+            const pathAngle = Math.atan2(targetY - sourceY, targetX - sourceX) * 180 / Math.PI;
             
             // Add relation label based on type
             let relationLabel;
@@ -328,24 +391,24 @@ document.addEventListener('DOMContentLoaded', function() {
                     relationLabel = '';
             }
             
-            // Add the relation label
-            const labelBg = linkGroup.append('rect')
-                .attr('x', symbolX - 15)
-                .attr('y', symbolY - 10)
+            // Add the relation label with background
+            const labelGroup = linkGroup.append('g')
+                .attr('transform', `translate(${symbolX}, ${symbolY})`);
+            
+            // Add white background for the label
+            labelGroup.append('rect')
+                .attr('x', -15)
+                .attr('y', -15)
                 .attr('width', 30)
-                .attr('height', 20)
-                .attr('fill', 'white')
-                .attr('stroke', 'none')
+                .attr('height', 25)
+                .attr('class', 'relation-bg')
                 .attr('rx', 3)
-                .attr('ry', 3)
-                .attr('transform', `rotate(${angle}, ${symbolX}, ${symbolY})`);
+                .attr('ry', 3);
                 
-            const label = linkGroup.append('text')
+            labelGroup.append('text')
                 .attr('class', `relation-symbol ${type}`)
-                .attr('x', symbolX)
-                .attr('y', symbolY + 5)
-                .attr('text-anchor', 'middle')
-                .attr('transform', `rotate(${angle}, ${symbolX}, ${symbolY})`)
+                .attr('x', 0)
+                .attr('y', 0)
                 .text(relationLabel);
         });
     }
@@ -355,10 +418,10 @@ document.addEventListener('DOMContentLoaded', function() {
         let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
         
         nodes.forEach(node => {
-            minX = Math.min(minX, node.x - 60);
-            minY = Math.min(minY, node.y - 20);
-            maxX = Math.max(maxX, node.x + 60);
-            maxY = Math.max(maxY, node.y + 20);
+            minX = Math.min(minX, node.x - 70);
+            minY = Math.min(minY, node.y - 30);
+            maxX = Math.max(maxX, node.x + 70);
+            maxY = Math.max(maxY, node.y + 30);
         });
         
         return { minX, minY, maxX, maxY };
