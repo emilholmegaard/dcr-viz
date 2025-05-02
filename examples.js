@@ -7,6 +7,7 @@ const examples = {
             {
                 id: "event1",
                 label: "Submit Application",
+                role: "Applicant",
                 included: true,
                 pending: false,
                 executed: false,
@@ -16,6 +17,7 @@ const examples = {
             {
                 id: "event2",
                 label: "Review Application",
+                role: "Reviewer",
                 included: true,
                 pending: false,
                 executed: false,
@@ -25,6 +27,7 @@ const examples = {
             {
                 id: "event3",
                 label: "Approve Application",
+                role: "Manager",
                 included: true,
                 pending: false,
                 executed: false,
@@ -34,6 +37,7 @@ const examples = {
             {
                 id: "event4",
                 label: "Reject Application",
+                role: "Manager",
                 included: true,
                 pending: false,
                 executed: false,
@@ -81,6 +85,7 @@ const examples = {
             {
                 id: "event1",
                 label: "Create Order",
+                role: "Customer",
                 included: true,
                 pending: false,
                 executed: false,
@@ -90,6 +95,7 @@ const examples = {
             {
                 id: "event2",
                 label: "Pay Invoice",
+                role: "Customer",
                 included: true,
                 pending: false,
                 executed: false,
@@ -99,6 +105,7 @@ const examples = {
             {
                 id: "event3",
                 label: "Ship Order",
+                role: "Warehouse",
                 included: true,
                 pending: false,
                 executed: false,
@@ -108,6 +115,7 @@ const examples = {
             {
                 id: "event4",
                 label: "Cancel Order",
+                role: "Customer",
                 included: true,
                 pending: false,
                 executed: false,
@@ -117,6 +125,7 @@ const examples = {
             {
                 id: "event5",
                 label: "Refund Payment",
+                role: "Finance",
                 included: true,
                 pending: false,
                 executed: false,
@@ -179,6 +188,7 @@ const examples = {
             {
                 id: "event1",
                 label: "Define Project",
+                role: "Project Manager",
                 included: true,
                 pending: false,
                 executed: false,
@@ -188,6 +198,7 @@ const examples = {
             {
                 id: "event2",
                 label: "Assign Team",
+                role: "HR",
                 included: true,
                 pending: false,
                 executed: false,
@@ -197,6 +208,7 @@ const examples = {
             {
                 id: "event3",
                 label: "Create Schedule",
+                role: "Project Manager",
                 included: true,
                 pending: false,
                 executed: false,
@@ -206,6 +218,7 @@ const examples = {
             {
                 id: "event4",
                 label: "Execute Tasks",
+                role: "Team",
                 included: true,
                 pending: false,
                 executed: false,
@@ -215,6 +228,7 @@ const examples = {
             {
                 id: "event5",
                 label: "Project Review",
+                role: "Stakeholders",
                 included: true,
                 pending: false,
                 executed: false,
@@ -224,6 +238,7 @@ const examples = {
             {
                 id: "event6",
                 label: "Revise Project",
+                role: "Project Manager",
                 included: false,
                 pending: false,
                 executed: false,
@@ -233,6 +248,7 @@ const examples = {
             {
                 id: "event7",
                 label: "Close Project",
+                role: "Project Manager",
                 included: true,
                 pending: false,
                 executed: false,
@@ -314,6 +330,121 @@ const examples = {
                 type: "milestone",
                 source: "event3",
                 target: "event6"
+            }
+        ]
+    },
+    
+    // Email workflow example (inspired by Image 2)
+    example4: {
+        events: [
+            {
+                id: "event1",
+                label: "Create email",
+                role: "Technical Employee",
+                included: true,
+                pending: false,
+                executed: false,
+                x: 100,
+                y: 100
+            },
+            {
+                id: "event2",
+                label: "Send email",
+                role: "Technical Employee",
+                included: true,
+                pending: false,
+                executed: false,
+                x: 300,
+                y: 100
+            },
+            {
+                id: "event3",
+                label: "Receive Email",
+                role: "SD",
+                included: true,
+                pending: false,
+                executed: false,
+                x: 500,
+                y: 100
+            },
+            {
+                id: "event4",
+                label: "Reply",
+                role: "SD",
+                included: true,
+                pending: false,
+                executed: false,
+                x: 700,
+                y: 100
+            },
+            {
+                id: "event5",
+                label: "Ignore",
+                role: "SD",
+                included: true,
+                pending: false,
+                executed: false,
+                x: 600,
+                y: 200
+            }
+        ],
+        relations: [
+            // Condition relations
+            {
+                type: "condition",
+                source: "event1",
+                target: "event2"
+            },
+            {
+                type: "condition",
+                source: "event2",
+                target: "event3"
+            },
+            {
+                type: "condition",
+                source: "event3",
+                target: "event4"
+            },
+            {
+                type: "condition",
+                source: "event3",
+                target: "event5"
+            },
+            
+            // Response relations
+            {
+                type: "response",
+                source: "event4",
+                target: "event2"
+            },
+            
+            // Exclude relations
+            {
+                type: "exclude",
+                source: "event4",
+                target: "event5"
+            },
+            {
+                type: "exclude",
+                source: "event5",
+                target: "event4"
+            },
+            
+            // Milestone relations
+            {
+                type: "milestone",
+                source: "event1",
+                target: "event2"
+            },
+            {
+                type: "milestone",
+                source: "event2",
+                target: "event3"
+            },
+            {
+                type: "milestone",
+                source: "event3",
+                target: "event4"
             }
         ]
     }
