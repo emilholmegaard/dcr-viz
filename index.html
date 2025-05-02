@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DCR Graph Visualizer</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>DCR Graph Visualizer</h1>
+            <p>Visualize Dynamic Condition Response Graphs from JSON format</p>
+        </header>
+
+        <div class="controls">
+            <div class="input-section">
+                <div class="file-upload">
+                    <h2>Upload DCR Graph JSON</h2>
+                    <input type="file" id="fileInput" accept=".json">
+                    <button id="loadFileBtn">Load File</button>
+                </div>
+                <div class="json-input">
+                    <h2>Or Paste JSON</h2>
+                    <textarea id="jsonInput" placeholder="Paste your DCR graph JSON here..."></textarea>
+                    <button id="visualizeBtn">Visualize</button>
+                </div>
+            </div>
+            
+            <div class="examples">
+                <h2>Example Graphs</h2>
+                <button id="example1Btn">Example 1</button>
+                <button id="example2Btn">Example 2</button>
+            </div>
+        </div>
+
+        <div class="visualization-container">
+            <div class="toolbar">
+                <button id="zoomInBtn">Zoom In</button>
+                <button id="zoomOutBtn">Zoom Out</button>
+                <button id="resetBtn">Reset View</button>
+            </div>
+            <div id="graph"></div>
+        </div>
+
+        <div class="legend">
+            <h3>Relation Types</h3>
+            <div class="legend-item">
+                <div class="legend-color condition"></div>
+                <span>Condition (→•)</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color response"></div>
+                <span>Response (•→)</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color include"></div>
+                <span>Include (+)</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color exclude"></div>
+                <span>Exclude (%)</span>
+            </div>
+        </div>
+    </div>
+
+    <script src="examples.js"></script>
+    <script src="visualizer.js"></script>
+</body>
+</html>
