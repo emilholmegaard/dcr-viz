@@ -82,22 +82,43 @@ Example:
 
 ### Relation Types
 
-DCR graphs support five types of relations, each represented with a specific notation and color:
+DCR graphs support five types of relations, each represented with a specific visual symbol that matches the standard DCR notation:
 
 1. **Condition** (`"type": "condition"`): The source event must have been executed (or excluded) before the target event can be executed.
-   - Visual representation: Blue arrow with an asterisk (→*)
+   - Visual representation: Blue arrow with a blue circle containing an asterisk (*)
+   - Position: In the middle of the path
 
 2. **Response** (`"type": "response"`): When the source event is executed, the target event becomes pending and must be executed eventually.
-   - Visual representation: Red arrow with an asterisk (*→)
+   - Visual representation: Red arrow with a red circle containing an asterisk (*)
+   - Position: Near the source of the path
 
 3. **Include** (`"type": "include"`): When the source event is executed, it includes the target event in the workflow.
-   - Visual representation: Green arrow with a plus symbol (→+)
+   - Visual representation: Green arrow with a green circle containing a plus symbol (+)
+   - Position: In the middle of the path
 
 4. **Exclude** (`"type": "exclude"`): When the source event is executed, it excludes the target event from the workflow.
-   - Visual representation: Purple arrow with a percent symbol (→%)
+   - Visual representation: Purple arrow with a purple circle containing a percent symbol (%)
+   - Position: In the middle of the path
 
 5. **Milestone** (`"type": "milestone"`): The target event can only be executed if the source event is not pending.
-   - Visual representation: Orange arrow with a diamond symbol (→◇)
+   - Visual representation: Orange arrow with an orange diamond shape (◇)
+   - Position: In the middle of the path
+
+## Event States
+
+Events in a DCR graph can be in various states, which affect their visual appearance in the graph:
+
+1. **Included**: The event is part of the current workflow and can be executed if its conditions are met.
+   - Visual representation: Standard node with solid border
+
+2. **Not Included**: The event is excluded from the current workflow and cannot be executed.
+   - Visual representation: Faded node with dashed border
+
+3. **Pending**: The event needs to be executed due to a response relation being triggered.
+   - Visual representation: Node with red border
+
+4. **Executed**: The event has already been executed.
+   - Visual representation: Node with gray background
 
 ## Complete Example
 
