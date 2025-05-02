@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', function() {
         // Define arrow markers for different relation types
         const defs = svg.append('defs');
         
-        // Arrow marker (used for all relations)
+        // Standard arrow marker
         defs.append('marker')
             .attr('id', 'arrowhead')
             .attr('viewBox', '0 -5 10 10')
@@ -219,69 +219,138 @@ document.addEventListener('DOMContentLoaded', function() {
                 targetX = target.x + (1/Math.tan(angle)) * (dy < 0 ? nodeHeight/2 : -nodeHeight/2);
             }
             
-            // Calculate control point for curve (perpendicular to the line)
+            // Calculate control point for curve (slight curve)
             const cpx = (sourceX + targetX) / 2 + dy * 0.1;
             const cpy = (sourceY + targetY) / 2 - dx * 0.1;
             
             // Create curved path
             const path = `M${sourceX},${sourceY} Q${cpx},${cpy} ${targetX},${targetY}`;
             
-            // Add link path
+            // Add link path with appropriate color
+            let strokeColor;
+            switch(type) {
+                case 'condition':
+                    strokeColor = '#0072bc';  // Blue
+                    break;
+                case 'response':
+                    strokeColor = '#d81e05';  // Red
+                    break;
+                case 'include':
+                    strokeColor = '#4ca64c';  // Green
+                    break;
+                case 'exclude':
+                    strokeColor = '#8000a0';  // Purple
+                    break;
+                case 'milestone':
+                    strokeColor = '#ff8000';  // Orange
+                    break;
+                default:
+                    strokeColor = '#333';
+            }
+            
+            // Draw the path for the relation
             const link = linkGroup.append('path')
                 .attr('class', `link ${type}`)
                 .attr('d', path)
+                .attr('stroke', strokeColor)
                 .attr('marker-end', 'url(#arrowhead)');
             
-            // Calculate position for symbol (at midpoint of the curve)
-            const t = 0.5; // t parameter for quadratic Bezier (0.5 means midpoint)
-            const symbolX = (1-t)*(1-t)*sourceX + 2*(1-t)*t*cpx + t*t*targetX;
-            const symbolY = (1-t)*(1-t)*sourceY + 2*(1-t)*t*cpy + t*t*targetY;
+            // Get the path length to position the marker properly
+            const pathLength = link.node().getTotalLength();
             
-            // Calculate angle for the relation type symbol
-            const pathAngle = Math.atan2(targetY - sourceY, targetX - sourceX) * 180 / Math.PI;
-            
-            // Add relation label based on type
-            let relationLabel;
-            
-            switch(type) {
-                case 'condition':
-                    relationLabel = '→*';
-                    break;
-                case 'response':
-                    relationLabel = '*→';
-                    break;
-                case 'include':
-                    relationLabel = '→+';
-                    break;
-                case 'exclude':
-                    relationLabel = '→%';
-                    break;
-                case 'milestone':
-                    relationLabel = '→◇';
-                    break;
-                default:
-                    relationLabel = '';
+            // Calculate position for the relation symbol
+            // For 'response' relation, place symbol near source
+            // For others, place it in the middle of the path
+            let symbolPosition;
+            if (type === 'response') {
+                symbolPosition = link.node().getPointAtLength(20); // Near source
+            } else {
+                symbolPosition = link.node().getPointAtLength(pathLength * 0.5); // Middle
             }
             
-            // Add the relation label with background
-            const labelGroup = linkGroup.append('g')
-                .attr('transform', `translate(${symbolX}, ${symbolY})`);
+            // Add the relation symbol to the path
+            const symbolGroup = linkGroup.append('g')
+                .attr('transform', `translate(${symbolPosition.x}, ${symbolPosition.y})`);
             
-            // Add visible white background for the label
-            labelGroup.append('rect')
-                .attr('x', -15)
-                .attr('y', -15)
-                .attr('width', 30)
-                .attr('height', 25)
-                .attr('class', 'relation-bg')
-                .attr('rx', 3)
-                .attr('ry', 3);
+            // Determine the symbol based on relation type
+            if (type === 'condition') {
+                // Blue circle with asterisk for condition
+                symbolGroup.append('circle')
+                    .attr('r', 10)
+                    .attr('fill', 'white')
+                    .attr('stroke', strokeColor)
+                    .attr('stroke-width', 2);
                 
-            labelGroup.append('text')
-                .attr('class', `relation-symbol ${type}`)
-                .attr('x', 0)
-                .attr('y', 0)
-                .text(relationLabel);
+                // Asterisk inside circle
+                symbolGroup.append('text')
+                    .attr('text-anchor', 'middle')
+                    .attr('dominant-baseline', 'central')
+                    .attr('fill', strokeColor)
+                    .attr('font-weight', 'bold')
+                    .attr('font-size', '16px')
+                    .text('*');
+            } 
+            else if (type === 'response') {
+                // Red circle with asterisk for response
+                symbolGroup.append('circle')
+                    .attr('r', 10)
+                    .attr('fill', 'white')
+                    .attr('stroke', strokeColor)
+                    .attr('stroke-width', 2);
+                
+                // Asterisk inside circle
+                symbolGroup.append('text')
+                    .attr('text-anchor', 'middle')
+                    .attr('dominant-baseline', 'central')
+                    .attr('fill', strokeColor)
+                    .attr('font-weight', 'bold')
+                    .attr('font-size', '16px')
+                    .text('*');
+            }
+            else if (type === 'include') {
+                // Green circle with plus for include
+                symbolGroup.append('circle')
+                    .attr('r', 10)
+                    .attr('fill', 'white')
+                    .attr('stroke', strokeColor)
+                    .attr('stroke-width', 2);
+                
+                // Plus inside circle
+                symbolGroup.append('text')
+                    .attr('text-anchor', 'middle')
+                    .attr('dominant-baseline', 'central')
+                    .attr('fill', strokeColor)
+                    .attr('font-weight', 'bold')
+                    .attr('font-size', '16px')
+                    .text('+');
+            }
+            else if (type === 'exclude') {
+                // Purple circle with % for exclude
+                symbolGroup.append('circle')
+                    .attr('r', 10)
+                    .attr('fill', 'white')
+                    .attr('stroke', strokeColor)
+                    .attr('stroke-width', 2);
+                
+                // Percent inside circle
+                symbolGroup.append('text')
+                    .attr('text-anchor', 'middle')
+                    .attr('dominant-baseline', 'central')
+                    .attr('fill', strokeColor)
+                    .attr('font-weight', 'bold')
+                    .attr('font-size', '16px')
+                    .text('%');
+            }
+            else if (type === 'milestone') {
+                // Orange diamond for milestone
+                symbolGroup.append('path')
+                    .attr('d', 'M0,-10 L10,0 L0,10 L-10,0 Z') // Diamond shape
+                    .attr('fill', 'white')
+                    .attr('stroke', strokeColor)
+                    .attr('stroke-width', 2);
+                
+                // No text needed for diamond
+            }
         });
         
         // Center view on the graph
@@ -300,7 +369,7 @@ document.addEventListener('DOMContentLoaded', function() {
             nodeById[node.id] = node;
         });
         
-        // Remove all existing links
+        // Remove all existing links and markers
         g.selectAll('.links').remove();
         
         // Recreate all links
@@ -344,69 +413,138 @@ document.addEventListener('DOMContentLoaded', function() {
                 targetX = target.x + (1/Math.tan(angle)) * (dy < 0 ? nodeHeight/2 : -nodeHeight/2);
             }
             
-            // Calculate control point for curve (perpendicular to the line)
+            // Calculate control point for curve (slight curve)
             const cpx = (sourceX + targetX) / 2 + dy * 0.1;
             const cpy = (sourceY + targetY) / 2 - dx * 0.1;
             
             // Create curved path
             const path = `M${sourceX},${sourceY} Q${cpx},${cpy} ${targetX},${targetY}`;
             
-            // Add link path
+            // Add link path with appropriate color
+            let strokeColor;
+            switch(type) {
+                case 'condition':
+                    strokeColor = '#0072bc';  // Blue
+                    break;
+                case 'response':
+                    strokeColor = '#d81e05';  // Red
+                    break;
+                case 'include':
+                    strokeColor = '#4ca64c';  // Green
+                    break;
+                case 'exclude':
+                    strokeColor = '#8000a0';  // Purple
+                    break;
+                case 'milestone':
+                    strokeColor = '#ff8000';  // Orange
+                    break;
+                default:
+                    strokeColor = '#333';
+            }
+            
+            // Draw the path for the relation
             const link = linkGroup.append('path')
                 .attr('class', `link ${type}`)
                 .attr('d', path)
+                .attr('stroke', strokeColor)
                 .attr('marker-end', 'url(#arrowhead)');
             
-            // Calculate position for symbol (at midpoint of the curve)
-            const t = 0.5; // t parameter for quadratic Bezier (0.5 means midpoint)
-            const symbolX = (1-t)*(1-t)*sourceX + 2*(1-t)*t*cpx + t*t*targetX;
-            const symbolY = (1-t)*(1-t)*sourceY + 2*(1-t)*t*cpy + t*t*targetY;
+            // Get the path length to position the marker properly
+            const pathLength = link.node().getTotalLength();
             
-            // Calculate angle for the relation type symbol
-            const pathAngle = Math.atan2(targetY - sourceY, targetX - sourceX) * 180 / Math.PI;
-            
-            // Add relation label based on type
-            let relationLabel;
-            
-            switch(type) {
-                case 'condition':
-                    relationLabel = '→*';
-                    break;
-                case 'response':
-                    relationLabel = '*→';
-                    break;
-                case 'include':
-                    relationLabel = '→+';
-                    break;
-                case 'exclude':
-                    relationLabel = '→%';
-                    break;
-                case 'milestone':
-                    relationLabel = '→◇';
-                    break;
-                default:
-                    relationLabel = '';
+            // Calculate position for the relation symbol
+            // For 'response' relation, place symbol near source
+            // For others, place it in the middle of the path
+            let symbolPosition;
+            if (type === 'response') {
+                symbolPosition = link.node().getPointAtLength(20); // Near source
+            } else {
+                symbolPosition = link.node().getPointAtLength(pathLength * 0.5); // Middle
             }
             
-            // Add the relation label with background
-            const labelGroup = linkGroup.append('g')
-                .attr('transform', `translate(${symbolX}, ${symbolY})`);
+            // Add the relation symbol to the path
+            const symbolGroup = linkGroup.append('g')
+                .attr('transform', `translate(${symbolPosition.x}, ${symbolPosition.y})`);
             
-            // Add white background for the label
-            labelGroup.append('rect')
-                .attr('x', -15)
-                .attr('y', -15)
-                .attr('width', 30)
-                .attr('height', 25)
-                .attr('class', 'relation-bg')
-                .attr('rx', 3)
-                .attr('ry', 3);
+            // Determine the symbol based on relation type
+            if (type === 'condition') {
+                // Blue circle with asterisk for condition
+                symbolGroup.append('circle')
+                    .attr('r', 10)
+                    .attr('fill', 'white')
+                    .attr('stroke', strokeColor)
+                    .attr('stroke-width', 2);
                 
-            labelGroup.append('text')
-                .attr('class', `relation-symbol ${type}`)
-                .attr('x', 0)
-                .attr('y', 0)
-                .text(relationLabel);
+                // Asterisk inside circle
+                symbolGroup.append('text')
+                    .attr('text-anchor', 'middle')
+                    .attr('dominant-baseline', 'central')
+                    .attr('fill', strokeColor)
+                    .attr('font-weight', 'bold')
+                    .attr('font-size', '16px')
+                    .text('*');
+            } 
+            else if (type === 'response') {
+                // Red circle with asterisk for response
+                symbolGroup.append('circle')
+                    .attr('r', 10)
+                    .attr('fill', 'white')
+                    .attr('stroke', strokeColor)
+                    .attr('stroke-width', 2);
+                
+                // Asterisk inside circle
+                symbolGroup.append('text')
+                    .attr('text-anchor', 'middle')
+                    .attr('dominant-baseline', 'central')
+                    .attr('fill', strokeColor)
+                    .attr('font-weight', 'bold')
+                    .attr('font-size', '16px')
+                    .text('*');
+            }
+            else if (type === 'include') {
+                // Green circle with plus for include
+                symbolGroup.append('circle')
+                    .attr('r', 10)
+                    .attr('fill', 'white')
+                    .attr('stroke', strokeColor)
+                    .attr('stroke-width', 2);
+                
+                // Plus inside circle
+                symbolGroup.append('text')
+                    .attr('text-anchor', 'middle')
+                    .attr('dominant-baseline', 'central')
+                    .attr('fill', strokeColor)
+                    .attr('font-weight', 'bold')
+                    .attr('font-size', '16px')
+                    .text('+');
+            }
+            else if (type === 'exclude') {
+                // Purple circle with % for exclude
+                symbolGroup.append('circle')
+                    .attr('r', 10)
+                    .attr('fill', 'white')
+                    .attr('stroke', strokeColor)
+                    .attr('stroke-width', 2);
+                
+                // Percent inside circle
+                symbolGroup.append('text')
+                    .attr('text-anchor', 'middle')
+                    .attr('dominant-baseline', 'central')
+                    .attr('fill', strokeColor)
+                    .attr('font-weight', 'bold')
+                    .attr('font-size', '16px')
+                    .text('%');
+            }
+            else if (type === 'milestone') {
+                // Orange diamond for milestone
+                symbolGroup.append('path')
+                    .attr('d', 'M0,-10 L10,0 L0,10 L-10,0 Z') // Diamond shape
+                    .attr('fill', 'white')
+                    .attr('stroke', strokeColor)
+                    .attr('stroke-width', 2);
+                
+                // No text needed for diamond
+            }
         });
     }
     
