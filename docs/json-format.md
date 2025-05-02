@@ -30,6 +30,7 @@ Each event in the `events` array is an object with the following properties:
 |----------|------|-------------|----------|
 | `id` | String | Unique identifier for the event | Yes |
 | `label` | String | Display name of the event | Yes |
+| `role` | String | Role responsible for the activity (displayed at the top of the box) | No |
 | `included` | Boolean | Whether the event is currently included in the graph | Yes |
 | `pending` | Boolean | Whether the event is pending (needs to be executed) | Yes |
 | `executed` | Boolean | Whether the event has been executed | Yes |
@@ -43,6 +44,7 @@ Example:
   {
     "id": "event1",
     "label": "Submit Application",
+    "role": "Applicant",
     "included": true,
     "pending": false,
     "executed": false,
@@ -53,6 +55,8 @@ Example:
 ```
 
 If `x` and `y` coordinates are not provided, the visualization will automatically position the events in a circular layout.
+
+If `role` is not provided, the event id will be used as a default role label.
 
 ## Relations
 
@@ -105,6 +109,7 @@ Here's a complete example of a simple DCR graph in JSON format:
     {
       "id": "event1",
       "label": "Submit Application",
+      "role": "Applicant",
       "included": true,
       "pending": false,
       "executed": false,
@@ -114,6 +119,7 @@ Here's a complete example of a simple DCR graph in JSON format:
     {
       "id": "event2",
       "label": "Review Application",
+      "role": "Reviewer",
       "included": true,
       "pending": false,
       "executed": false,
@@ -123,6 +129,7 @@ Here's a complete example of a simple DCR graph in JSON format:
     {
       "id": "event3",
       "label": "Approve Application",
+      "role": "Manager",
       "included": true,
       "pending": false,
       "executed": false,
