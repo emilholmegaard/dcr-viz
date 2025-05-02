@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const visualizeBtn = document.getElementById('visualizeBtn');
     const example1Btn = document.getElementById('example1Btn');
     const example2Btn = document.getElementById('example2Btn');
+    const example3Btn = document.getElementById('example3Btn');
     const zoomInBtn = document.getElementById('zoomInBtn');
     const zoomOutBtn = document.getElementById('zoomOutBtn');
     const resetBtn = document.getElementById('resetBtn');
@@ -27,6 +28,7 @@ document.addEventListener('DOMContentLoaded', function() {
     visualizeBtn.addEventListener('click', handleJsonInput);
     example1Btn.addEventListener('click', () => loadExample('example1'));
     example2Btn.addEventListener('click', () => loadExample('example2'));
+    example3Btn.addEventListener('click', () => loadExample('example3'));
     zoomInBtn.addEventListener('click', () => zoomAction(1.2));
     zoomOutBtn.addEventListener('click', () => zoomAction(0.8));
     resetBtn.addEventListener('click', resetView);
