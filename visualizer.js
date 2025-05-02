@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const example1Btn = document.getElementById('example1Btn');
     const example2Btn = document.getElementById('example2Btn');
     const example3Btn = document.getElementById('example3Btn');
+    const example4Btn = document.getElementById('example4Btn');
     const zoomInBtn = document.getElementById('zoomInBtn');
     const zoomOutBtn = document.getElementById('zoomOutBtn');
     const resetBtn = document.getElementById('resetBtn');
@@ -29,6 +30,7 @@ document.addEventListener('DOMContentLoaded', function() {
     example1Btn.addEventListener('click', () => loadExample('example1'));
     example2Btn.addEventListener('click', () => loadExample('example2'));
     example3Btn.addEventListener('click', () => loadExample('example3'));
+    example4Btn.addEventListener('click', () => loadExample('example4'));
     zoomInBtn.addEventListener('click', () => zoomAction(1.2));
     zoomOutBtn.addEventListener('click', () => zoomAction(0.8));
     resetBtn.addEventListener('click', resetView);
@@ -280,11 +282,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 .attr('x', 0)
                 .attr('y', 0)
                 .text(relationLabel);
-                
-            // For visual debugging
-            // labelGroup.append('circle')
-            //     .attr('r', 3)
-            //     .attr('fill', 'red');
         });
         
         // Center view on the graph
@@ -480,6 +477,6 @@ document.addEventListener('DOMContentLoaded', function() {
         d3.select(this).classed('active', false);
     }
     
-    // Load example 1 by default
-    loadExample('example1');
+    // Load example 4 by default (email workflow matching Image 2)
+    loadExample('example4');
 });
