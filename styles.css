@@ -77,7 +77,7 @@ textarea {
 }
 
 button {
-    background-color: #3498db;
+    background-color: #3c8dbc;
     color: white;
     border: none;
     padding: 8px 16px;
@@ -88,7 +88,7 @@ button {
 }
 
 button:hover {
-    background-color: #2980b9;
+    background-color: #367fa9;
 }
 
 .examples {
@@ -127,6 +127,7 @@ button:hover {
     border-radius: 4px;
     overflow: hidden;
     position: relative;
+    background-color: #f9f9f9;
 }
 
 .legend {
@@ -154,20 +155,25 @@ button:hover {
     margin-right: 10px;
 }
 
+/* Updated DCR relation colors to match dcrgraphs.net */
 .condition {
-    background-color: #3498db;
+    background-color: #0072bc;  /* Blue for Condition relation */
 }
 
 .response {
-    background-color: #e74c3c;
+    background-color: #d81e05;  /* Red for Response relation */
 }
 
 .include {
-    background-color: #2ecc71;
+    background-color: #4ca64c;  /* Green for Include relation */
 }
 
 .exclude {
-    background-color: #9b59b6;
+    background-color: #8000a0;  /* Purple for Exclude relation */
+}
+
+.milestone {
+    background-color: #ff8000;  /* Orange for Milestone relation */
 }
 
 /* D3.js styling */
@@ -182,21 +188,23 @@ button:hover {
 }
 
 .node.included rect {
-    fill: #f8f9fa;
+    fill: #fff;
 }
 
 .node.executed rect {
     fill: #e9ecef;
+    stroke: #555;
 }
 
 .node.pending rect {
-    stroke: #fd7e14;
+    stroke: #d81e05;
     stroke-width: 2px;
 }
 
 .node.not-included rect {
-    fill: #f1f1f1;
+    fill: #f5f5f5;
     stroke-dasharray: 3,3;
+    opacity: 0.7;
 }
 
 .node text {
@@ -211,39 +219,47 @@ button:hover {
 }
 
 .link.condition {
-    stroke: #3498db;
+    stroke: #0072bc;  /* Blue for Condition relation */
 }
 
 .link.response {
-    stroke: #e74c3c;
+    stroke: #d81e05;  /* Red for Response relation */
 }
 
 .link.include {
-    stroke: #2ecc71;
+    stroke: #4ca64c;  /* Green for Include relation */
 }
 
 .link.exclude {
-    stroke: #9b59b6;
+    stroke: #8000a0;  /* Purple for Exclude relation */
+}
+
+.link.milestone {
+    stroke: #ff8000;  /* Orange for Milestone relation */
 }
 
 .marker {
-    fill: #999;
+    fill: #555;
 }
 
 .marker.condition {
-    fill: #3498db;
+    fill: #0072bc;  /* Blue for Condition relation */
 }
 
 .marker.response {
-    fill: #e74c3c;
+    fill: #d81e05;  /* Red for Response relation */
 }
 
 .marker.include {
-    fill: #2ecc71;
+    fill: #4ca64c;  /* Green for Include relation */
 }
 
 .marker.exclude {
-    fill: #9b59b6;
+    fill: #8000a0;  /* Purple for Exclude relation */
+}
+
+.marker.milestone {
+    fill: #ff8000;  /* Orange for Milestone relation */
 }
 
 @media (max-width: 768px) {
