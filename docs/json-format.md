@@ -60,7 +60,7 @@ Each relation in the `relations` array is an object with the following propertie
 
 | Property | Type | Description | Required |
 |----------|------|-------------|----------|
-| `type` | String | Type of relation (condition, response, include, exclude) | Yes |
+| `type` | String | Type of relation (condition, response, include, exclude, milestone) | Yes |
 | `source` | String | ID of the source event | Yes |
 | `target` | String | ID of the target event | Yes |
 
@@ -78,19 +78,22 @@ Example:
 
 ### Relation Types
 
-DCR graphs support four types of relations:
+DCR graphs support five types of relations, each represented with a specific notation and color:
 
 1. **Condition** (`"type": "condition"`): The source event must have been executed (or excluded) before the target event can be executed.
-   - Visual representation: Blue arrow with a filled circle (→•)
+   - Visual representation: Blue arrow with an asterisk (→*)
 
 2. **Response** (`"type": "response"`): When the source event is executed, the target event becomes pending and must be executed eventually.
-   - Visual representation: Red arrow with a filled circle (•→)
+   - Visual representation: Red arrow with an asterisk (*→)
 
 3. **Include** (`"type": "include"`): When the source event is executed, it includes the target event in the workflow.
-   - Visual representation: Green arrow with a plus symbol (+)
+   - Visual representation: Green arrow with a plus symbol (→+)
 
 4. **Exclude** (`"type": "exclude"`): When the source event is executed, it excludes the target event from the workflow.
-   - Visual representation: Purple arrow with a percent symbol (%)
+   - Visual representation: Purple arrow with a percent symbol (→%)
+
+5. **Milestone** (`"type": "milestone"`): The target event can only be executed if the source event is not pending.
+   - Visual representation: Orange arrow with a diamond symbol (→◇)
 
 ## Complete Example
 
@@ -142,6 +145,11 @@ Here's a complete example of a simple DCR graph in JSON format:
       "type": "condition",
       "source": "event2",
       "target": "event3"
+    },
+    {
+      "type": "milestone",
+      "source": "event2",
+      "target": "event3"
     }
   ]
 }
@@ -151,3 +159,4 @@ This example represents a simple application process where:
 1. A submitted application (event1) must be reviewed (event2)
 2. Submitting an application (event1) requires a review (event2) to be performed eventually
 3. An application can only be approved (event3) after it has been reviewed (event2)
+4. The approval (event3) can only proceed if the review (event2) is not pending (milestone relation)
