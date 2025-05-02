@@ -78,7 +78,7 @@ const examples = {
             }
         ]
     },
-    
+
     // Order processing workflow
     example2: {
         events: [
@@ -181,7 +181,7 @@ const examples = {
             }
         ]
     },
-    
+
     // Project management workflow with all relation types
     example3: {
         events: [
@@ -273,7 +273,7 @@ const examples = {
                 source: "event3",
                 target: "event4"
             },
-            
+
             // Response relations
             {
                 type: "response",
@@ -290,7 +290,7 @@ const examples = {
                 source: "event4",
                 target: "event5"
             },
-            
+
             // Include relations
             {
                 type: "include",
@@ -302,7 +302,7 @@ const examples = {
                 source: "event6",
                 target: "event2"
             },
-            
+
             // Exclude relations
             {
                 type: "exclude",
@@ -319,7 +319,7 @@ const examples = {
                 source: "event7",
                 target: "event6"
             },
-            
+
             // Milestone relations
             {
                 type: "milestone",
@@ -333,7 +333,7 @@ const examples = {
             }
         ]
     },
-    
+
     // Email workflow example (inspired by Image 2)
     example4: {
         events: [
@@ -410,14 +410,14 @@ const examples = {
                 source: "event3",
                 target: "event5"
             },
-            
+
             // Response relations
             {
                 type: "response",
                 source: "event4",
                 target: "event2"
             },
-            
+
             // Exclude relations
             {
                 type: "exclude",
@@ -429,7 +429,7 @@ const examples = {
                 source: "event5",
                 target: "event4"
             },
-            
+
             // Milestone relations
             {
                 type: "milestone",

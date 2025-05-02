@@ -50,7 +50,8 @@ header p {
     gap: 20px;
 }
 
-.file-upload, .json-input {
+.file-upload,
+.json-input {
     flex: 1;
     min-width: 300px;
 }
@@ -156,50 +157,60 @@ button:hover {
     margin-right: 10px;
 }
 
-/* DCR relation colors to match dcrgraphs.net */
+/* DCR relation colors */
 .condition {
-    color: #0072bc;  /* Blue for Condition relation */
+    color: #0072bc;
+    /* Blue for Condition relation */
 }
 
 .response {
-    color: #d81e05;  /* Red for Response relation */
+    color: #d81e05;
+    /* Red for Response relation */
 }
 
 .include {
-    color: #4ca64c;  /* Green for Include relation */
+    color: #4ca64c;
+    /* Green for Include relation */
 }
 
 .exclude {
-    color: #8000a0;  /* Purple for Exclude relation */
+    color: #8000a0;
+    /* Purple for Exclude relation */
 }
 
 .milestone {
-    color: #ff8000;  /* Orange for Milestone relation */
+    color: #ff8000;
+    /* Orange for Milestone relation */
 }
 
 /* Link colors */
 .link.condition {
-    stroke: #0072bc;  /* Blue for Condition relation */
+    stroke: #0072bc;
+    /* Blue for Condition relation */
     stroke-width: 2px;
 }
 
 .link.response {
-    stroke: #d81e05;  /* Red for Response relation */
+    stroke: #d81e05;
+    /* Red for Response relation */
     stroke-width: 2px;
 }
 
 .link.include {
-    stroke: #4ca64c;  /* Green for Include relation */
+    stroke: #4ca64c;
+    /* Green for Include relation */
     stroke-width: 2px;
 }
 
 .link.exclude {
-    stroke: #8000a0;  /* Purple for Exclude relation */
+    stroke: #8000a0;
+    /* Purple for Exclude relation */
     stroke-width: 2px;
 }
 
 .link.milestone {
-    stroke: #ff8000;  /* Orange for Milestone relation */
+    stroke: #ff8000;
+    /* Orange for Milestone relation */
     stroke-width: 2px;
 }
 
@@ -243,101 +254,99 @@ button:hover {
     background-color: #e9ecef;
 }
 
-/* D3.js styling */
+/* Modern D3.js styling for the new design */
 .node {
     cursor: move;
 }
 
 /* Activity box styling */
-.node rect {
-    fill: #fffaeb;  /* Light cream color to match Image 2 */
-    stroke: #bbb;  /* Light gray border */
-    stroke-width: 2px;
-    rx: 8px;
-    ry: 8px;
+.node .activity-box {
+    fill: #fffdf5;
+    stroke: #666;
+    stroke-width: 1.5px;
 }
 
-.node.included rect {
-    fill: #fffaeb;
+.node.not-included .activity-box {
+    stroke-dasharray: 4;
+    fill: #f9f9f9;
 }
 
-.node.executed rect {
-    fill: #e9ecef;
+.node.executed .activity-box {
+    fill: #f5f5f5;
 }
 
-.node.pending rect {
+.node.pending .activity-box {
     stroke: #d81e05;
     stroke-width: 2px;
 }
 
-.node.not-included rect {
-    fill: #f5f5f5;
-    stroke-dasharray: 3,3;
-    opacity: 0.7;
+/* Activity header styling */
+.node .activity-header {
+    fill: #fffdf5;
+    stroke: #666;
+    stroke-width: 1.5px;
 }
 
-/* Activity role styling */
-.node .role-label {
-    font-size: 11px;
-    font-weight: bold;
-    text-anchor: middle;
-    pointer-events: none;
-    fill: #000;
+.node.not-included .activity-header {
+    stroke-dasharray: 4;
 }
 
-/* Activity name styling */
-.node .activity-label {
+.node .header-corners {
+    fill: none;
+    stroke: none;
+}
+
+.node .header-text {
     font-size: 14px;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    text-anchor: middle;
-    pointer-events: none;
+    font-weight: bold;
     fill: #333;
 }
 
+/* Activity label styling */
+.node .activity-label {
+    font-size: 16px;
+    fill: #000;
+}
+
+/* Function label styling */
+.node .function-label {
+    font-size: 14px;
+    font-style: italic;
+    fill: #666;
+}
+
+/* Link styling */
 .link {
     fill: none;
     stroke-width: 2px;
 }
 
+.node.not-included .link {
+    stroke-dasharray: 4;
+}
+
 /* Relation symbols */
 .relation-symbol {
-    font-size: 18px;
+    font-size: 16px;
     font-weight: bold;
-    pointer-events: none;
-    dominant-baseline: central;
     text-anchor: middle;
-}
-
-/* Relation symbol markers */
-.marker-circle {
-    fill: none;
-    stroke-width: 1.5px;
-}
-
-/* Relation arrows */
-.arrow-head {
-    fill: #333;
-}
-
-/* Label backgrounds */
-.relation-bg {
-    fill: white;
-    fill-opacity: 0;
+    dominant-baseline: central;
 }
 
 @media (max-width: 768px) {
     .input-section {
         flex-direction: column;
     }
-    
-    .file-upload, .json-input {
+
+    .file-upload,
+    .json-input {
         width: 100%;
     }
-    
+
     #graph {
         height: 400px;
     }
-    
+
     .legend-states {
         flex-direction: column;
         gap: 8px;
